@@ -1,40 +1,525 @@
-name: hashicorp/null
+name: ansible/aap
 resources:
-    null_resource:
+    aap_group:
         subCategory: ""
-        description: The null_resource resource implements the standard resource lifecycle but takes no further action. On Terraform 1.4 and later, use the terraform_data resource type https://developer.hashicorp.com/terraform/language/resources/terraform-data instead. Terraform 1.9 and later support the moved configuration block from null_resource to terraform_data. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-        name: null_resource
-        title: null_resource Resource - terraform-provider-null
+        description: Creates an inventory group.
+        name: aap_group
+        title: aap_group Resource - terraform-provider-aap
         examples:
-            - name: cluster
+            - name: sample_foo
               manifest: |-
                 {
-                  "connection": [
-                    {
-                      "host": "${element(aws_instance.cluster[*].public_ip, 0)}"
-                    }
-                  ],
-                  "provisioner": {
-                    "remote-exec": [
-                      {
-                        "inline": [
-                          "bootstrap-cluster.sh ${join(\" \",\n      aws_instance.cluster[*].private_ip)}"
-                        ]
-                      }
-                    ]
-                  },
-                  "triggers": {
-                    "cluster_instance_ids": "${join(\",\", aws_instance.cluster[*].id)}"
-                  }
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_group_foo",
+                  "variables": "${jsonencode({ \"ansible_network_os\" : \"ios\" })}"
                 }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
               dependencies:
-                aws_instance.cluster: |-
+                aap_inventory.my_inventory: |-
                     {
-                      "ami": "ami-0dcc1e21636832c5d",
-                      "count": 3,
-                      "instance_type": "m5.large"
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_bar
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_group_bar",
+                  "variables": "${jsonencode(yamldecode(local.values_variables))}"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_baz
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_group_baz",
+                  "variables": "${jsonencode({\n    ansible_network_os = \"ios\"\n    # Add other variables as needed\n  })}"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_abc
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_group_abc",
+                  "variables": "${yamlencode({ \"os\" : \"Linux\", \"automation\" : \"ansible\" })}"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_xyz
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_group_xyz",
+                  "variables": "os: Linux\nautomation: ansible-devel"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
                     }
         argumentDocs:
-            id: (String) This is set to a random value at create time.
-            triggers: (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+            description: (String) Description for the group
+            id: (Number) Group Id
+            inventory_id: (Number) Inventory id
+            name: (String) Name of the group
+            url: (String) URL for the group
+            variables: (String) Variables for the group configuration. Must be provided as either a JSON or YAML string.
+        importStatements: []
+    aap_host:
+        subCategory: ""
+        description: Creates a host.
+        name: aap_host
+        title: aap_host Resource - terraform-provider-aap
+        examples:
+            - name: sample_foo
+              manifest: |-
+                {
+                  "groups": [
+                    "${aap_group.group_1.id}",
+                    "${aap_group.group_2.id}"
+                  ],
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_host_foo",
+                  "variables": "${jsonencode(\n    {\n      \"foo\" : \"bar\"\n    }\n  )}"
+                }
+              references:
+                groups: aap_group.group_1.id
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_group.group_1: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 1"
+                    }
+                aap_group.group_2: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 2"
+                    }
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_bar
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_host_bar",
+                  "variables": "${jsonencode(yamldecode(local.values_variables))}"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_group.group_1: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 1"
+                    }
+                aap_group.group_2: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 2"
+                    }
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_baz
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_host_baz",
+                  "variables": "${jsonencode({\n    foo = \"bar\"\n    # Add other variables as needed\n  })}"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_group.group_1: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 1"
+                    }
+                aap_group.group_2: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 2"
+                    }
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_abc
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_host_abc",
+                  "variables": "${yamlencode({ \"os\" : \"Linux\", \"automation\" : \"ansible\" })}"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_group.group_1: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 1"
+                    }
+                aap_group.group_2: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 2"
+                    }
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_xyz
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "name": "tf_host_xyz",
+                  "variables": "os: Linux\nautomation: ansible-devel"
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_group.group_1: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 1"
+                    }
+                aap_group.group_2: |-
+                    {
+                      "inventory_id": "${aap_inventory.my_inventory.id}",
+                      "name": "Group 2"
+                    }
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+        argumentDocs:
+            description: (String) Description for the host
+            enabled: (Boolean) Denotes if the host is online and is available
+            groups: (Set of Number) The list of groups to assosicate with a host.
+            id: (Number) ID of the host
+            inventory_id: (Number) Inventory id
+            name: (String) Name of the host
+            url: (String) URL of the host
+            variables: (String) Variables for the host configuration. Must be provided as either a JSON or YAML string.
+        importStatements: []
+    aap_inventory:
+        subCategory: ""
+        description: Creates an inventory.
+        name: aap_inventory
+        title: aap_inventory Resource - terraform-provider-aap
+        examples:
+            - name: sample_foo
+              manifest: |-
+                {
+                  "description": "A new inventory for testing",
+                  "name": "My new inventory foo",
+                  "organization": 1,
+                  "variables": "${jsonencode(\n    {\n      \"foo\" : \"bar\"\n    }\n  )}"
+                }
+            - name: sample_bar
+              manifest: |-
+                {
+                  "description": "A new inventory for testing",
+                  "name": "My new inventory bar",
+                  "organization": 1,
+                  "variables": "${jsonencode(yamldecode(local.values_variables))}"
+                }
+            - name: sample_baz
+              manifest: |-
+                {
+                  "description": "A new inventory for testing",
+                  "name": "My new inventory baz",
+                  "organization": 1,
+                  "variables": "${jsonencode({\n    foo = \"bar\"\n    # Add other variables as needed\n  })}"
+                }
+            - name: sample_abc
+              manifest: |-
+                {
+                  "description": "A new inventory for testing",
+                  "name": "My new inventory abc",
+                  "organization": 1,
+                  "variables": "${yamlencode({ \"os\" : \"Linux\", \"automation\" : \"ansible\" })}"
+                }
+            - name: sample_xyz
+              manifest: |-
+                {
+                  "description": "A new inventory for testing",
+                  "name": "My new inventory xyz",
+                  "organization": 1,
+                  "variables": "os: Linux\nautomation: ansible-devel"
+                }
+        argumentDocs:
+            description: (String) Description for the inventory
+            id: (Number) Inventory id
+            name: (String) Name of the inventory
+            named_url: (String) Named URL of the inventory
+            organization: (Number) Identifier for the organization the inventory should be created in. If not provided, the inventory will be created in the default organization. NOTICE the organization attribute will be required in release 2.0.0
+            organization_name: (String) Name for the organization.
+            url: (String) URL of the inventory
+            variables: (String) Inventory variables. Must be provided as either a JSON or YAML string.
+        importStatements: []
+    aap_job:
+        subCategory: ""
+        description: Launches an AAP job. A job is launched only when the resource is first created or when the resource is changed. The triggers argument can be used to launch a new job based on any arbitrary value. This resource always creates a new job in AAP. A destroy will not delete a job created by this resource, it will only remove the resource from the state. Moreover, you can set wait_for_completion to true, then Terraform will wait until this job is created and reaches any final state before continuing. This parameter works in both create and update operations. You can also tweak wait_for_completion_timeout_seconds to control the timeout limit.
+        name: aap_job
+        title: aap_job Resource - terraform-provider-aap
+        examples:
+            - name: sample_foo
+              manifest: |-
+                {
+                  "extra_vars": "${jsonencode({ \"resource_state\" : \"absent\" })}",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "job_template_id": 7,
+                  "triggers": {
+                    "execution_environment_id": "3"
+                  }
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_bar
+              manifest: |-
+                {
+                  "extra_vars": "${jsonencode(yamldecode(local.values_extra_vars))}",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "job_template_id": 7
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_baz
+              manifest: |-
+                {
+                  "extra_vars": "${jsonencode({\n    execution_environment_id = \"3\"\n    # Add other variables as needed\n  })}",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "job_template_id": 7
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_abc
+              manifest: |-
+                {
+                  "extra_vars": "${yamlencode({ \"os\" : \"Linux\", \"automation\" : \"ansible\" })}",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "job_template_id": 7
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_xyz
+              manifest: |-
+                {
+                  "extra_vars": "os: Linux\nautomation: ansible-devel",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "job_template_id": 7
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_wait_for_completion
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "job_template_id": 7,
+                  "wait_for_completion": true,
+                  "wait_for_completion_timeout_seconds": 120
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: job
+              manifest: |-
+                {
+                  "depends_on": [
+                    "${aap_host.host}"
+                  ],
+                  "inventory_id": "${data.aap_inventory.inventory.id}",
+                  "job_template_id": "${data.aap_job_template.job_template.id}"
+                }
+              references:
+                inventory_id: data.aap_inventory.inventory.id
+                job_template_id: data.aap_job_template.job_template.id
+              dependencies:
+                aap_host.host: |-
+                    {
+                      "inventory_id": "${data.aap_inventory.inventory.id}",
+                      "name": "127.0.0.1"
+                    }
+        argumentDocs:
+            extra_vars: (String) Extra Variables. Must be provided as either a JSON or YAML string.
+            ignored_fields: (List of String) The list of properties set by the user but ignored on server side.
+            inventory_id: (Number) Identifier for the inventory where job should be created in. If not provided, the job will be created in the default inventory.
+            job_template_id: (Number) ID of the job template.
+            job_type: (String) Job type
+            status: (String) Status of the job
+            triggers: (Map of String) Map of arbitrary keys and values that, when changed, will trigger a creation of a new Job on AAP. Use 'terraform taint' if you want to force the creation of a new job without changing this value.
+            url: (String) URL of the job template
+            wait_for_completion: (Boolean) When this is set to true, Terraform will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
+            wait_for_completion_timeout_seconds: (Number) Sets the maximum amount of seconds Terraform will wait before timing out the updates, and the job creation will fail. Default value of 120
+        importStatements: []
+    aap_workflow_job:
+        subCategory: ""
+        description: Launches an AAP workflow job. A workflow job is launched only when the resource is first created or when the resource is changed. The triggers argument can be used to launch a new workflow job based on any arbitrary value. This resource always creates a new workflow job in AAP. A destroy will not delete a workflow job created by this resource, it will only remove the resource from the state.
+        name: aap_workflow_job
+        title: aap_workflow_job Resource - terraform-provider-aap
+        examples:
+            - name: sample_foo
+              manifest: |-
+                {
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "workflow_job_template_id": 8
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_bar
+              manifest: |-
+                {
+                  "extra_vars": "${jsonencode(yamldecode(local.values_extra_vars))}",
+                  "workflow_job_template_id": 8
+                }
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_baz
+              manifest: |-
+                {
+                  "extra_vars": "${jsonencode({\n    execution_environment_id = \"3\"\n    # Add other variables as needed\n  })}",
+                  "workflow_job_template_id": 8
+                }
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_abc
+              manifest: |-
+                {
+                  "extra_vars": "${yamlencode({ \"os\" : \"Linux\", \"automation\" : \"ansible\" })}",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "workflow_job_template_id": 8
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: sample_xyz
+              manifest: |-
+                {
+                  "extra_vars": "os: Linux\nautomation: ansible-devel",
+                  "inventory_id": "${aap_inventory.my_inventory.id}",
+                  "workflow_job_template_id": 8
+                }
+              references:
+                inventory_id: aap_inventory.my_inventory.id
+              dependencies:
+                aap_inventory.my_inventory: |-
+                    {
+                      "name": "A new inventory",
+                      "organization": 1
+                    }
+            - name: workflow_job
+              manifest: |-
+                {
+                  "depends_on": [
+                    "${aap_host.host}"
+                  ],
+                  "inventory_id": "${data.aap_inventory.inventory.id}",
+                  "workflow_job_template_id": "${data.aap_workflow_job_template.workflow_job_template.id}"
+                }
+              references:
+                inventory_id: data.aap_inventory.inventory.id
+                workflow_job_template_id: data.aap_workflow_job_template.workflow_job_template.id
+              dependencies:
+                aap_host.host: |-
+                    {
+                      "inventory_id": "${data.aap_inventory.inventory.id}",
+                      "name": "127.0.0.1"
+                    }
+        argumentDocs:
+            extra_vars: (String) Extra Variables. Must be provided as either a JSON or YAML string.
+            ignored_fields: (List of String) The list of properties set by the user but ignored on server side.
+            inventory_id: (Number) Identifier for the inventory the job will be run against.
+            job_type: (String) Job type
+            status: (String) Status of the workflow job
+            triggers: (Map of String) Map of arbitrary keys and values that, when changed, will trigger a creation of a new Workflow Job on AAP. Use 'terraform taint' if you want to force the creation of a new workflow job without changing this value.
+            url: (String) URL of the workflow job template
+            workflow_job_template_id: (Number) ID of the workflow job template.
         importStatements: []

@@ -1,0 +1,27 @@
+apiVersion: core.aap.crossplane.io/v1alpha1
+kind: WorkflowJob
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/workflowjob
+  labels:
+    testing.upbound.io/example-name: sample_foo
+  name: sample-foo
+spec:
+  forProvider:
+    inventoryId: ${aap_inventory.my_inventory.id}
+    workflowJobTemplateId: 8
+
+---
+
+apiVersion: core.aap.crossplane.io/v1alpha1
+kind: Inventory
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/workflowjob
+  labels:
+    testing.upbound.io/example-name: my_inventory
+  name: my-inventory
+spec:
+  forProvider:
+    name: A new inventory
+    organization: 1

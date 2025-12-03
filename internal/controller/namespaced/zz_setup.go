@@ -9,15 +9,23 @@ import (
 
 	"github.com/crossplane/upjet/v2/pkg/controller"
 
-	resource "github.com/crossplane/upjet-provider-template/internal/controller/namespaced/null/resource"
-	providerconfig "github.com/crossplane/upjet-provider-template/internal/controller/namespaced/providerconfig"
+	group "github.com/crossplane-contrib/provider-aap/internal/controller/namespaced/core/group"
+	host "github.com/crossplane-contrib/provider-aap/internal/controller/namespaced/core/host"
+	inventory "github.com/crossplane-contrib/provider-aap/internal/controller/namespaced/core/inventory"
+	job "github.com/crossplane-contrib/provider-aap/internal/controller/namespaced/core/job"
+	workflowjob "github.com/crossplane-contrib/provider-aap/internal/controller/namespaced/core/workflowjob"
+	providerconfig "github.com/crossplane-contrib/provider-aap/internal/controller/namespaced/providerconfig"
 )
 
 // Setup creates all controllers with the supplied logger and adds them to
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		resource.Setup,
+		group.Setup,
+		host.Setup,
+		inventory.Setup,
+		job.Setup,
+		workflowjob.Setup,
 		providerconfig.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
@@ -31,7 +39,11 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 // the supplied manager gated.
 func SetupGated(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		resource.SetupGated,
+		group.SetupGated,
+		host.SetupGated,
+		inventory.SetupGated,
+		job.SetupGated,
+		workflowjob.SetupGated,
 		providerconfig.SetupGated,
 	} {
 		if err := setup(mgr, o); err != nil {

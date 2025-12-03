@@ -4,15 +4,14 @@ import (
 	// Note(turkenh): we are importing this to embed provider schema document
 	_ "embed"
 
+	coreCluster "github.com/crossplane-contrib/provider-aap/config/cluster/core"
+	coreNamespaced "github.com/crossplane-contrib/provider-aap/config/namespaced/core"
 	ujconfig "github.com/crossplane/upjet/v2/pkg/config"
-
-	nullCluster "github.com/crossplane/upjet-provider-template/config/cluster/null"
-	nullNamespaced "github.com/crossplane/upjet-provider-template/config/namespaced/null"
 )
 
 const (
-	resourcePrefix = "template"
-	modulePath     = "github.com/crossplane/upjet-provider-template"
+	resourcePrefix = "aap"
+	modulePath     = "github.com/crossplane-contrib/provider-aap"
 )
 
 //go:embed schema.json
@@ -24,7 +23,7 @@ var providerMetadata string
 // GetProvider returns provider configuration
 func GetProvider() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup("template.crossplane.io"),
+		ujconfig.WithRootGroup("aap.crossplane.io"),
 		ujconfig.WithIncludeList(ExternalNameConfigured()),
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithDefaultResourceOptions(
@@ -33,7 +32,7 @@ func GetProvider() *ujconfig.Provider {
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
-		nullCluster.Configure,
+		coreCluster.Configure,
 	} {
 		configure(pc)
 	}
@@ -45,7 +44,7 @@ func GetProvider() *ujconfig.Provider {
 // GetProviderNamespaced returns the namespaced provider configuration
 func GetProviderNamespaced() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup("template.m.crossplane.io"),
+		ujconfig.WithRootGroup("aap.m.crossplane.io"),
 		ujconfig.WithIncludeList(ExternalNameConfigured()),
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithDefaultResourceOptions(
@@ -57,7 +56,7 @@ func GetProviderNamespaced() *ujconfig.Provider {
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
-		nullNamespaced.Configure,
+		coreNamespaced.Configure,
 	} {
 		configure(pc)
 	}

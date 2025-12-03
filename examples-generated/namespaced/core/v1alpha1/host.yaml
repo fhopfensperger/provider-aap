@@ -1,0 +1,70 @@
+apiVersion: core.aap.m.crossplane.io/v1alpha1
+kind: Host
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/host
+  labels:
+    testing.upbound.io/example-name: sample_foo
+  name: sample-foo
+  namespace: crossplane-system
+spec:
+  forProvider:
+    groups:
+    - ${aap_group.group_1.id}
+    - ${aap_group.group_2.id}
+    inventoryId: ${aap_inventory.my_inventory.id}
+    name: tf_host_foo
+    variables: |-
+      ${jsonencode(
+          {
+            "foo" : "bar"
+          }
+        )}
+
+---
+
+apiVersion: core.aap.m.crossplane.io/v1alpha1
+kind: Group
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/host
+  labels:
+    testing.upbound.io/example-name: group_1
+  name: group-1
+  namespace: crossplane-system
+spec:
+  forProvider:
+    inventoryId: ${aap_inventory.my_inventory.id}
+    name: Group 1
+
+---
+
+apiVersion: core.aap.m.crossplane.io/v1alpha1
+kind: Group
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/host
+  labels:
+    testing.upbound.io/example-name: group_2
+  name: group-2
+  namespace: crossplane-system
+spec:
+  forProvider:
+    inventoryId: ${aap_inventory.my_inventory.id}
+    name: Group 2
+
+---
+
+apiVersion: core.aap.m.crossplane.io/v1alpha1
+kind: Inventory
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/host
+  labels:
+    testing.upbound.io/example-name: my_inventory
+  name: my-inventory
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: A new inventory
+    organization: 1

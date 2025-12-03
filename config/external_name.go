@@ -7,8 +7,11 @@ import (
 // ExternalNameConfigs contains all external name configurations for this
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
-	// Import requires using a randomly generated ID from provider: nl-2e21sda
-	"null_resource": idWithStub(),
+	"aap_group":        idWithStub(),
+	"aap_host":         idWithStub(),
+	"aap_inventory":    idWithStub(),
+	"aap_job":          idWithStub(),
+	"aap_workflow_job": idWithStub(),
 }
 
 func idWithStub() config.ExternalName {

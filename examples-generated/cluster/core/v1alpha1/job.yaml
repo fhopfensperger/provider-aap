@@ -1,0 +1,30 @@
+apiVersion: core.aap.crossplane.io/v1alpha1
+kind: Job
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/job
+  labels:
+    testing.upbound.io/example-name: sample_foo
+  name: sample-foo
+spec:
+  forProvider:
+    extraVars: '${jsonencode({ "resource_state" : "absent" })}'
+    inventoryId: ${aap_inventory.my_inventory.id}
+    jobTemplateId: 7
+    triggers:
+      execution_environment_id: "3"
+
+---
+
+apiVersion: core.aap.crossplane.io/v1alpha1
+kind: Inventory
+metadata:
+  annotations:
+    meta.upbound.io/example-id: core/v1alpha1/job
+  labels:
+    testing.upbound.io/example-name: my_inventory
+  name: my-inventory
+spec:
+  forProvider:
+    name: A new inventory
+    organization: 1
