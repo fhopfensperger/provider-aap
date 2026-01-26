@@ -108,10 +108,23 @@ spec:
                 - source
                 type: object
               host:
+                description: Host AAP Server URL. https://my-aap-server.com
                 type: string
+              insecureSkipVerify:
+                description: InsecureSkipVerify skips SSL certificate verification
+                  when connecting to the AAP server.
+                type: boolean
+              timeout:
+                description: Timeout specifies a time limit for requests made to the
+                  AAP server. Defaults to 5 if not provided. A Timeout of zero means
+                  no timeout.
+                format: int64
+                type: integer
             required:
             - credentials
             - host
+            - insecureSkipVerify
+            - timeout
             type: object
           status:
             description: A ProviderConfigStatus reflects the observed state of a ProviderConfig.

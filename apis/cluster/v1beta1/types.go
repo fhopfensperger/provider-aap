@@ -10,7 +10,12 @@ import (
 type ProviderConfigSpec struct {
 	// Credentials required to authenticate to this provider.
 	Credentials ProviderCredentials `json:"credentials"`
-	Host        string              `json:"host"`
+	// Host AAP Server URL. https://my-aap-server.com
+	Host string `json:"host"`
+	// InsecureSkipVerify skips SSL certificate verification when connecting to the AAP server.
+	InsecureSkipVerify *bool `json:"insecureSkipVerify"`
+	// Timeout specifies a time limit for requests made to the AAP server. Defaults to 5 if not provided. A Timeout of zero means no timeout.
+	Timeout *int64 `json:"timeout"`
 }
 
 // ProviderCredentials required to authenticate.

@@ -1,0 +1,11 @@
+apiVersion: core.aap.crossplane.io/v1alpha1
+kind: Job
+metadata:
+  name: sample-foo
+  annotations:
+    crossplane.io/external-name: /api/v2/jobs/20183/
+spec:
+  forProvider:
+    inventoryId: 249
+    jobTemplateId: 3273
+
