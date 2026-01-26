@@ -88,14 +88,6 @@ spec:
                       Map of arbitrary keys and values that, when changed, will trigger a creation of a new Job on AAP.
                     type: object
                     x-kubernetes-map-type: granular
-                  waitForCompletion:
-                    description: |-
-                      (boolean) when this is set to true, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-                      when this is set to `true`, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-                    type: boolean
-                  waitForCompletionTimeoutSeconds:
-                    description: Default value of `120`
-                    type: number
                 type: object
               initProvider:
                 description: |-
@@ -133,14 +125,6 @@ spec:
                       Map of arbitrary keys and values that, when changed, will trigger a creation of a new Job on AAP.
                     type: object
                     x-kubernetes-map-type: granular
-                  waitForCompletion:
-                    description: |-
-                      (boolean) when this is set to true, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-                      when this is set to `true`, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-                    type: boolean
-                  waitForCompletionTimeoutSeconds:
-                    description: Default value of `120`
-                    type: number
                 type: object
               managementPolicies:
                 default:
@@ -257,14 +241,6 @@ spec:
                       (String) URL of the job template
                       URL of the job template
                     type: string
-                  waitForCompletion:
-                    description: |-
-                      (boolean) when this is set to true, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-                      when this is set to `true`, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-                    type: boolean
-                  waitForCompletionTimeoutSeconds:
-                    description: Default value of `120`
-                    type: number
                 type: object
               conditions:
                 description: Conditions of the resource.

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	ujconfig "github.com/crossplane/upjet/v2/pkg/config"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -25,19 +26,14 @@ const (
 	keyToken                = "token"
 	keyUsername             = "username"
 	keyPassword             = "password"
+	keyHost                 = "host"
 )
 
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
 // returns Terraform provider setup configuration
-func TerraformSetupBuilder(version, providerSource, providerVersion string) terraform.SetupFn {
+func TerraformSetupBuilder(tfProvider *ujconfig.Provider) terraform.SetupFn {
 	return func(ctx context.Context, client client.Client, mg resource.Managed) (terraform.Setup, error) {
-		ps := terraform.Setup{
-			Version: version,
-			Requirement: terraform.ProviderRequirement{
-				Source:  providerSource,
-				Version: providerVersion,
-			},
-		}
+		ps := terraform.Setup{}
 
 		pcSpec, err := resolveProviderConfig(ctx, client, mg)
 		if err != nil {
@@ -66,8 +62,19 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		}
 		// TODO:  Validate and set host if provided
 		if pcSpec.Host != "" {
-			ps.Configuration["host"] = pcSpec.Host
+			ps.Configuration[keyHost] = pcSpec.Host
 		}
+
+		if pcSpec.InsecureSkipVerify != nil {
+			ps.Configuration["insecure_skip_verify"] = *pcSpec.InsecureSkipVerify
+		}
+
+		if pcSpec.Timeout != nil {
+			ps.Configuration["timeout"] = *pcSpec.Timeout
+		}
+
+		ps.FrameworkProvider = tfProvider.TerraformPluginFrameworkProvider
+
 		return ps, nil
 	}
 }

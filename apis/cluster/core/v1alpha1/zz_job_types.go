@@ -31,13 +31,6 @@ type JobInitParameters struct {
 	// Map of arbitrary keys and values that, when changed, will trigger a creation of a new Job on AAP.
 	// +mapType=granular
 	Triggers map[string]*string `json:"triggers,omitempty" tf:"triggers,omitempty"`
-
-	// (boolean) when this is set to true, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-	// when this is set to `true`, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-	WaitForCompletion *bool `json:"waitForCompletion,omitempty" tf:"wait_for_completion,omitempty"`
-
-	// Default value of `120`
-	WaitForCompletionTimeoutSeconds *float64 `json:"waitForCompletionTimeoutSeconds,omitempty" tf:"wait_for_completion_timeout_seconds,omitempty"`
 }
 
 type JobObservation struct {
@@ -76,13 +69,6 @@ type JobObservation struct {
 	// (String) URL of the job template
 	// URL of the job template
 	URL *string `json:"url,omitempty" tf:"url,omitempty"`
-
-	// (boolean) when this is set to true, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-	// when this is set to `true`, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-	WaitForCompletion *bool `json:"waitForCompletion,omitempty" tf:"wait_for_completion,omitempty"`
-
-	// Default value of `120`
-	WaitForCompletionTimeoutSeconds *float64 `json:"waitForCompletionTimeoutSeconds,omitempty" tf:"wait_for_completion_timeout_seconds,omitempty"`
 }
 
 type JobParameters struct {
@@ -107,15 +93,6 @@ type JobParameters struct {
 	// +kubebuilder:validation:Optional
 	// +mapType=granular
 	Triggers map[string]*string `json:"triggers,omitempty" tf:"triggers,omitempty"`
-
-	// (boolean) when this is set to true, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-	// when this is set to `true`, provider will wait until this aap_job resource is created, reaches any final status and then, proceeds with the following resource operation
-	// +kubebuilder:validation:Optional
-	WaitForCompletion *bool `json:"waitForCompletion,omitempty" tf:"wait_for_completion,omitempty"`
-
-	// Default value of `120`
-	// +kubebuilder:validation:Optional
-	WaitForCompletionTimeoutSeconds *float64 `json:"waitForCompletionTimeoutSeconds,omitempty" tf:"wait_for_completion_timeout_seconds,omitempty"`
 }
 
 // JobSpec defines the desired state of Job
