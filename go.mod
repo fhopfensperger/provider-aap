@@ -13,10 +13,10 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.29.0
 	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.75.1
-	k8s.io/api v0.33.0
-	k8s.io/apiextensions-apiserver v0.33.0
-	k8s.io/apimachinery v0.33.0
-	k8s.io/client-go v0.33.0
+	k8s.io/api v0.35.2
+	k8s.io/apiextensions-apiserver v0.35.2
+	k8s.io/apimachinery v0.35.2
+	k8s.io/client-go v0.35.2
 	sigs.k8s.io/controller-runtime v0.19.0
 	sigs.k8s.io/controller-tools v0.18.0
 )
